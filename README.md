@@ -26,8 +26,8 @@ O projeto demonstra o ciclo completo de uma solução IoT moderna, combinando **
 - [Dashboard Web](#-dashboard-web)
 - [Testes com Swagger](#-testando-a-api-pelo-swagger)
 - [Equipe](#-equipe)
-
----
+- 
+----
 
 # 🏗 Arquitetura da Solução
 

@@ -66,27 +66,37 @@
 <div class="container">
 
     <!-- CARDS -->
-    <div class="cards">
-        <div class="card">
-            <h3>CO₂ (ppm)</h3>
-            <p id="co2">--</p>
-        </div>
-
-        <div class="card">
-            <h3>PM2.5 (µg/m³)</h3>
-            <p id="pm25">--</p>
-        </div>
-
-        <div class="card">
-            <h3>Nível de Risco</h3>
-            <p id="risk">--</p>
-        </div>
-
-        <div class="card">
-            <h3>Anomalia</h3>
-            <p id="anomaly">--</p>
-        </div>
+<div class="cards">
+    <div class="card">
+        <h3>CO₂ (ppm)</h3>
+        <p id="co2">--</p>
     </div>
+
+    <div class="card">
+        <h3>PM2.5 (µg/m³)</h3>
+        <p id="pm25">--</p>
+    </div>
+
+    <div class="card">
+        <h3>Temperatura (°C)</h3>
+        <p id="temp">--</p>
+    </div>
+
+    <div class="card">
+        <h3>Umidade (%)</h3>
+        <p id="humidity">--</p>
+    </div>
+
+    <div class="card">
+        <h3>Nível de Risco</h3>
+        <p id="risk">--</p>
+    </div>
+
+    <div class="card">
+        <h3>Anomalia</h3>
+        <p id="anomaly">--</p>
+    </div>
+</div>
 
 
     <!-- GRÁFICO -->
@@ -100,8 +110,11 @@
     // Elementos
     const co2El = document.getElementById("co2");
     const pm25El = document.getElementById("pm25");
+    const tempEl = document.getElementById("temp");
+    const humidityEl = document.getElementById("humidity");
     const riskEl = document.getElementById("risk");
     const anomalyEl = document.getElementById("anomaly");
+
 
     // Chart.js setup
     const ctx = document.getElementById("airChart").getContext("2d");
@@ -109,20 +122,33 @@
         type: "line",
         data: {
             labels: [],
-            datasets: [
-                {
-                    label: "CO₂ (ppm)",
-                    data: [],
-                    borderColor: "#1e88e5",
-                    borderWidth: 2
-                },
-                {
-                    label: "PM2.5 (µg/m³)",
-                    data: [],
-                    borderColor: "#c62828",
-                    borderWidth: 2
-                }
-            ]
+datasets: [
+    {
+        label: "CO₂ (ppm)",
+        data: [],
+        borderColor: "#1e88e5",
+        borderWidth: 2
+    },
+    {
+        label: "PM2.5 (µg/m³)",
+        data: [],
+        borderColor: "#c62828",
+        borderWidth: 2
+    },
+    {
+        label: "Temperatura (°C)",
+        data: [],
+        borderColor: "#ff9800",
+        borderWidth: 2
+    },
+    {
+        label: "Umidade (%)",
+        data: [],
+        borderColor: "#009688",
+        borderWidth: 2
+    }
+]
+
         },
         options: {
             responsive: true,
@@ -146,6 +172,8 @@
 
             co2El.textContent = last.co2.toFixed(1);
             pm25El.textContent = last.pm25.toFixed(1);
+            tempEl.textContent = last.temp.toFixed(1);
+            humidityEl.textContent = last.humidity.toFixed(1);
 
             // Risco
             const riskLevels = ["Baixo", "Moderado", "Alto", "Perigoso"];
@@ -166,6 +194,8 @@
             airChart.data.labels = data.map((_, i) => i + 1);
             airChart.data.datasets[0].data = data.map(d => d.co2);
             airChart.data.datasets[1].data = data.map(d => d.pm25);
+            airChart.data.datasets[2].data = data.map(d => d.temp);
+            airChart.data.datasets[3].data = data.map(d => d.humidity);
 
             airChart.update();
 
