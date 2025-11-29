@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>SmartAir Guardian - Dashboard</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #1e88e5;
+            color: white;
+            padding: 15px 30px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .container {
+            padding: 25px;
+        }
+
+        .cards {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 23%;
+            box-shadow: 0px 2px 6px #ccc;
+            text-align: center;
+        }
+
+        .card h3 {
+            margin: 0;
+            color: #555;
+        }
+
+        .card p {
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .risk-low { color: #2e7d32; }
+        .risk-medium { color: #fbc02d; }
+        .risk-high { color: #ef6c00; }
+        .risk-danger { color: #c62828; }
+    </style>
+</head>
+
+<body>
+
+<header>SmartAir Guardian — Dashboard de Qualidade do Ar</header>
+
+<div class="container">
+
+    <!-- CARDS -->
+    <div class="cards">
+        <div class="card">
+            <h3>CO₂ (ppm)</h3>
+            <p id="co2">--</p>
+        </div>
+
+        <div class="card">
+            <h3>PM2.5 (µg/m³)</h3>
+            <p id="pm25">--</p>
+        </div>
+
+        <div class="card">
+            <h3>Nível de Risco</h3>
+            <p id="risk">--</p>
+        </div>
+
+        <div class="card">
+            <h3>Anomalia</h3>
+            <p id="anomaly">--</p>
+        </div>
+    </div>
+
+
+    <!-- GRÁFICO -->
+    <canvas id="airChart" height="120"></canvas>
+</div>
+
+
+<script>
+    const API_URL = "http://127.0.0.1:8000/readings/latest?limit=20";
+
+    // Elementos
+    const co2El = document.getElementById("co2");
+    const pm25El = document.getElementById("pm25");
+    const riskEl = document.getElementById("risk");
+    const anomalyEl = document.getElementById("anomaly");
+
+    // Chart.js setup
+    const ctx = document.getElementById("airChart").getContext("2d");
+    const airChart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: "CO₂ (ppm)",
+                    data: [],
+                    borderColor: "#1e88e5",
+                    borderWidth: 2
+                },
+                {
+                    label: "PM2.5 (µg/m³)",
+                    data: [],
+                    borderColor: "#c62828",
+                    borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: { title: { display: true, text: "Tempo" } },
+                y: { title: { display: true, text: "Valores" } }
+            }
+        }
+    });
+
+    // Função para buscar dados da API
+    async function fetchData() {
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+
+            if (!Array.isArray(data) || data.length === 0) return;
+
+            // Última leitura
+            const last = data[data.length - 1];
+
+            co2El.textContent = last.co2.toFixed(1);
+            pm25El.textContent = last.pm25.toFixed(1);
+
+            // Risco
+            const riskLevels = ["Baixo", "Moderado", "Alto", "Perigoso"];
+            riskEl.textContent = riskLevels[last.risk_level] || "—";
+
+            // Cor
+            riskEl.className = "";
+            if (last.risk_level === 0) riskEl.classList.add("risk-low");
+            else if (last.risk_level === 1) riskEl.classList.add("risk-medium");
+            else if (last.risk_level === 2) riskEl.classList.add("risk-high");
+            else riskEl.classList.add("risk-danger");
+
+            // Anomalia
+            anomalyEl.textContent = last.is_anomaly ? "Sim" : "Não";
+            anomalyEl.style.color = last.is_anomaly ? "#c62828" : "#2e7d32";
+
+            // Atualizar gráfico
+            airChart.data.labels = data.map((_, i) => i + 1);
+            airChart.data.datasets[0].data = data.map(d => d.co2);
+            airChart.data.datasets[1].data = data.map(d => d.pm25);
+
+            airChart.update();
+
+        } catch (error) {
+            console.log("Erro ao buscar dados:", error);
+        }
+    }
+
+    // Atualização a cada 5 segundos
+    setInterval(fetchData, 5000);
+
+    // Carrega ao abrir
+    fetchData();
+</script>
+
+</body>
+</html>
