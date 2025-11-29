@@ -18,13 +18,13 @@ O projeto demonstra o ciclo completo de uma solução IoT moderna, combinando **
 - [Tecnologias](#-tecnologias-utilizadas)
 - [Estrutura do Repositório](#-estrutura-do-repositório)
 - [Instalação](#-instalação-e-configuração)
+- [Ambiente Virtual](#criar-ambiente-virtual-opcional)
+- [Instalar Dependências](#instalar-dependências)
 - [Treinar os Modelos de IA](#-treinando-os-modelos-de-ia)
 - [Executando a API](#-executando-a-api-fastapi)
 - [Simulador IoT](#-rodando-o-simulador-iot)
 - [Dashboard Web](#-dashboard-web)
 - [Testes com Swagger](#-testando-a-api-pelo-swagger)
-- [Endpoints da API](#-endpoints-da-api)
-- [Demonstração em Vídeo](#-demonstração-em-vídeo)
 - [Equipe](#-equipe)
 
 ---
@@ -81,7 +81,50 @@ A arquitetura foi construída para simular um fluxo IoT completo:
 
 # ⚙ Instalação e Configuração
 
-### 1. Criar ambiente virtual (opcional)
+### Criar ambiente virtual (opcional)
 ```bash
 python -m venv venv
+```
+### Instalar dependências
+```bash
+pip install -r requirements.txt
+```
+### 🤖 Treinando os Modelos de IA
+```bash
+python backend/app/ml/train_models.py
+```
+### 🚀 Executando a API FastAPI
+```bash
+uvicorn backend.app.main:app --reload
+```
+Acesse:
+📌 Swagger: http://127.0.0.1:8000/docs
+📌 Status: http://127.0.0.1:8000/
+### 📡 Rodando o Simulador IoT
+```bash
+python iot_simulator/http_publisher.py
+```
+### 🌐 Dashboard Web
+Abra o arquivo:
+dashboard/index.html
+### 🧪 Testando a API pelo Swagger
+No navegador:
 
+👉 http://127.0.0.1:8000/docs
+
+Você poderá:
+
+Enviar leituras manualmente
+
+Consultar as últimas medições
+
+Ver como a IA classifica risco e detecta anomalias
+
+---
+# 👨‍💻 Equipe
+
+Projeto desenvolvido por: Dionatan Carvalho
+
+Curso: Inteligência Artificial Aplicada
+
+Universidade: Unisinos
