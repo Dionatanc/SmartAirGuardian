@@ -2,28 +2,62 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>SmartAir Guardian Dashboard de Qualidade do Ar</title>
+    <title>SmartAir Guardian - Dashboard de Qualidade do Ar</title>
 
-    <!-- Chart.js para o gráfico principal -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- ApexCharts para gauges -->
+    <!-- ApexCharts -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f4f6f8;
+            background: var(--bg-color);
             margin: 0;
-            padding: 0;
+            transition: background 0.3s, color 0.3s;
+            color: var(--text-color);
+        }
+
+        :root {
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+            --text-color: #222;
+            --header-bg: #1e88e5;
+            --chart-grid: #ddd;
+        }
+
+        body.dark {
+            --bg-color: #121212;
+            --card-bg: #1f1f1f;
+            --text-color: #e0e0e0;
+            --header-bg: #0d47a1;
+            --chart-grid: #333;
         }
 
         header {
-            background: #1e88e5;
+            background: var(--header-bg);
             color: white;
             padding: 15px 30px;
             font-size: 22px;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #toggle-dark {
+            background: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        body.dark #toggle-dark {
+            background: #333;
+            color: #fff;
         }
 
         .container {
@@ -40,11 +74,12 @@
 
         .gauge-box {
             width: 260px;
-            background: white;
+            background: var(--card-bg);
             padding: 15px;
             border-radius: 15px;
-            box-shadow: 0 2px 6px #ccc;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
             text-align: center;
+            transition: background 0.3s, color 0.3s;
         }
 
         .value-text {
@@ -54,21 +89,25 @@
         }
 
         canvas {
-            background: white;
+            background: var(--card-bg);
             border-radius: 10px;
             padding: 20px;
-            box-shadow: 0px 2px 6px #ccc;
+            box-shadow: 0px 2px 6px rgba(0,0,0,0.25);
+            transition: background 0.3s;
         }
     </style>
 </head>
 
 <body>
 
-<header>SmartAir Guardian Dashboard de Qualidade do Ar</header>
+<header>
+    SmartAir Guardian - Dashboard de Qualidade do Ar
+
+    <button id="toggle-dark">🌙 Dark Mode</button>
+</header>
 
 <div class="container">
 
-    <!-- GAUGES -->
     <div id="gauges">
 
         <div class="gauge-box">
@@ -98,20 +137,44 @@
 
     </div>
 
-    <!-- GRÁFICO -->
     <canvas id="airChart" height="140"></canvas>
 
 </div>
 
 <script>
 
+    // ========================= TOGGLE DARK MODE =========================
+    const toggle = document.getElementById("toggle-dark");
 
+    function applyTheme() {
+        if (localStorage.getItem("darkmode") === "on") {
+            document.body.classList.add("dark");
+            toggle.textContent = "☀️ Light Mode";
+        } else {
+            document.body.classList.remove("dark");
+            toggle.textContent = "🌙 Dark Mode";
+        }
+    }
+
+    toggle.addEventListener("click", () => {
+        if (localStorage.getItem("darkmode") === "on") {
+            localStorage.setItem("darkmode", "off");
+        } else {
+            localStorage.setItem("darkmode", "on");
+        }
+        applyTheme();
+    });
+
+    applyTheme();
+
+    // ========================= FUNÇÃO DE GAUGE =========================
     function createGauge(selector, label, color) {
         return new ApexCharts(document.querySelector(selector), {
             series: [0],
             chart: {
                 height: 200,
-                type: 'radialBar'
+                type: 'radialBar',
+                foreColor: document.body.classList.contains("dark") ? "#eee" : "#222"
             },
             plotOptions: {
                 radialBar: {
@@ -127,13 +190,11 @@
         });
     }
 
-
-
-    var gaugeCo2      = createGauge("#gauge_co2", "CO₂", "#1e88e5");    // azul
-    var gaugePm25     = createGauge("#gauge_pm25", "PM2.5", "#e53935"); // vermelho
-    var gaugeTemp     = createGauge("#gauge_temp", "Temperatura", "#fb8c00"); // laranja
-    var gaugeHumidity = createGauge("#gauge_humidity", "Umidade", "#43a047"); // verde
-    var gaugeRisk     = createGauge("#gauge_risk", "Risco", "#6d4c41"); // inicial neutro
+    var gaugeCo2      = createGauge("#gauge_co2", "CO₂", "#1e88e5");
+    var gaugePm25     = createGauge("#gauge_pm25", "PM2.5", "#e53935");
+    var gaugeTemp     = createGauge("#gauge_temp", "Temperatura", "#fb8c00");
+    var gaugeHumidity = createGauge("#gauge_humidity", "Umidade", "#43a047");
+    var gaugeRisk     = createGauge("#gauge_risk", "Risco", "#6d4c41");
 
     gaugeCo2.render();
     gaugePm25.render();
@@ -141,7 +202,7 @@
     gaugeHumidity.render();
     gaugeRisk.render();
 
-
+    // ========================= GRÁFICO PRINCIPAL =========================
 
     const ctx = document.getElementById("airChart").getContext("2d");
 
@@ -150,41 +211,21 @@
         data: {
             labels: [],
             datasets: [
-                {
-                    label: "CO₂ (ppm)",
-                    data: [],
-                    borderColor: "#1e88e5",
-                    borderWidth: 2
-                },
-                {
-                    label: "PM2.5 (µg/m³)",
-                    data: [],
-                    borderColor: "#e53935",
-                    borderWidth: 2
-                },
-                {
-                    label: "Temperatura (°C)",
-                    data: [],
-                    borderColor: "#fb8c00",
-                    borderWidth: 2
-                },
-                {
-                    label: "Umidade (%)",
-                    data: [],
-                    borderColor: "#43a047",
-                    borderWidth: 2
-                }
+                { label: "CO₂ (ppm)", data: [], borderColor: "#1e88e5", borderWidth: 2 },
+                { label: "PM2.5 (µg/m³)", data: [], borderColor: "#e53935", borderWidth: 2 },
+                { label: "Temperatura (°C)", data: [], borderColor: "#fb8c00", borderWidth: 2 },
+                { label: "Umidade (%)", data: [], borderColor: "#43a047", borderWidth: 2 }
             ]
         },
         options: {
-            responsive: true,
             scales: {
-                x: { title: { display: true, text: "Amostras" } },
-                y: { title: { display: true, text: "Valores" } }
+                x: { ticks: { color: "var(--text-color)" } },
+                y: { ticks: { color: "var(--text-color)" }, grid: { color: "var(--chart-grid)" } }
             }
         }
     });
 
+    // ========================= BUSCAR DADOS =========================
 
     const API_URL = "http://127.0.0.1:8000/readings/latest?limit=20";
 
@@ -196,26 +237,22 @@
 
             const last = data[data.length - 1];
 
-
-            document.getElementById("co2_value").textContent = `${last.co2.toFixed(1)} ppm`;
-            document.getElementById("pm25_value").textContent = `${last.pm25.toFixed(1)} µg/m³`;
-            document.getElementById("temp_value").textContent = `${last.temp.toFixed(1)} °C`;
+            document.getElementById("co2_value").textContent      = `${last.co2.toFixed(1)} ppm`;
+            document.getElementById("pm25_value").textContent     = `${last.pm25.toFixed(1)} µg/m³`;
+            document.getElementById("temp_value").textContent     = `${last.temp.toFixed(1)} °C`;
             document.getElementById("humidity_value").textContent = `${last.humidity.toFixed(1)} %`;
 
             const risks = ["Baixo", "Moderado", "Alto", "Perigoso"];
             document.getElementById("risk_value").textContent = risks[last.risk_level];
 
-
             const riskColors = ["#43a047", "#fdd835", "#fb8c00", "#e53935"];
             gaugeRisk.updateOptions({ colors: [riskColors[last.risk_level]] });
-
 
             gaugeCo2.updateSeries([(last.co2 / 1000) * 100]);
             gaugePm25.updateSeries([(last.pm25 / 150) * 100]);
             gaugeTemp.updateSeries([(last.temp / 50) * 100]);
             gaugeHumidity.updateSeries([last.humidity]);
             gaugeRisk.updateSeries([(last.risk_level / 3) * 100]);
-
 
             airChart.data.labels = data.map((_, i) => i + 1);
             airChart.data.datasets[0].data = data.map(d => d.co2);
@@ -225,17 +262,15 @@
 
             airChart.update();
 
-        } catch (error) {
-            console.log("Erro:", error);
+        } catch (e) {
+            console.error("Erro ao buscar dados:", e);
         }
     }
 
-    // Atualização automática
     setInterval(fetchData, 5000);
     fetchData();
 
 </script>
-
 
 </body>
 </html>

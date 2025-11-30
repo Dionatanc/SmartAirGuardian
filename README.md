@@ -2,7 +2,7 @@
 ### Plataforma Inteligente de Monitoramento da Qualidade do Ar utilizando IoT + IA
 
 O **SmartAir Guardian** é uma solução integrada de **Internet das Coisas**, **Big Data** e **Inteligência Artificial**, desenvolvida como projeto final da disciplina *IoT e IA Aplicada*.  
-O sistema monitora a qualidade do ar em tempo real utilizando sensores simulados (ou reais) e aplica modelos de IA para:
+O sistema monitora a qualidade do ar em tempo real utilizando sensores simulados e aplica modelos de IA para:
 
 - Detectar anomalias ambientais  
 - Classificar níveis de risco  
