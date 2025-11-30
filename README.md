@@ -125,6 +125,6 @@ Ver como a IA classifica risco e detecta anomalias
 
 Projeto desenvolvido por: Dionatan Carvalho
 
-Curso: Inteligência Artificial Aplicada
+Curso: Pós Gradução em Inteligência Artificial Aplicada
 
-Universidade: Unisinos
+Universidade: Universidade do Vale do Rio dos Sinos
