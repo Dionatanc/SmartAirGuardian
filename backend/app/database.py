@@ -1,4 +1,4 @@
-# backend/app/database.py
+
 
 from typing import List
 from datetime import datetime
@@ -12,7 +12,6 @@ _MEASUREMENTS: List[SensorReadingWithML] = []
 def save_measurement(measurement: SensorReadingWithML) -> None:
     """
     Persiste a leitura em memória.
-    Em uma versão futura, poderia ser substituído por MongoDB ou outro banco.
     """
     if measurement.timestamp is None:
         measurement.timestamp = datetime.utcnow()

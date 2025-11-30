@@ -1,4 +1,4 @@
-# iot_simulator/http_publisher.py
+
 
 import time
 import random

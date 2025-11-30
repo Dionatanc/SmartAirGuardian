@@ -1,4 +1,4 @@
-# iot_simulator/mqtt_publisher.py
+
 
 import json
 import time

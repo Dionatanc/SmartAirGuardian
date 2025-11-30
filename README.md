@@ -67,7 +67,8 @@ A arquitetura foi construída para simular um fluxo IoT completo:
 
 ### Dashboard
 - HTML + CSS  
-- **Chart.js**  
+- **Chart.js** 
+- **ApexCharts**
 - JavaScript puro (fetch API)
 
 ---

@@ -1,4 +1,4 @@
-# backend/app/ml/models_loader.py
+
 
 import os
 from typing import Dict, Any
@@ -48,7 +48,7 @@ class MLModels:
         }
 
 
-# helper global (opcional)
+# helper global
 ml_models: MLModels | None = None
 
 
